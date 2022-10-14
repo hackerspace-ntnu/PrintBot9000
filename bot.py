@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import discord
 from os import system
 import requests
+import cv2
 
 
 load_dotenv()
@@ -77,14 +78,28 @@ class MyClient(discord.Client):
                     system(command)
                     if message.attachments:
                         file_extention = message.attachments[0].url.split('.')[-1]
-                        filename = "meme" + "." + file_extention
-                        r = requests.get(message.attachments[0].url, stream=True)
-                        if r.status_code != 200:
-                            print("Error getting image")
-                            return
-                        with open(filename, "wb") as f:
-                            for chunk in r:
-                                f.write(chunk)
+                        if file_extention in ['jpg', 'jpeg', 'png']:
+                            filename = "meme" + '.' + file_extention
+                            r = requests.get(message.attachments[0].url, stream=True)
+                            if r.status_code != 200:
+                                print("Error getting image")
+                                return
+                            with open(filename, "wb") as f:
+                                for chunk in r:
+                                    f.write(chunk)
+                        elif file_extention in ['mp4', 'mov', 'webm']:
+                            filename = "meme.jpg"
+                            videoname = "meme." + file_extention
+                            r = requests.get(message.attachments[0].url, stream=True)
+                            if r.status_code != 200:
+                                print("Error getting image")
+                                return
+                            with open(videoname, "wb") as f:
+                                for chunk in r:
+                                    f.write(chunk)
+                            cap = cv2.VideoCapture(videoname)
+                            ret, frame = cap.read()
+                            cv2.imwrite(filename, frame)
                         command = f"lp -o fit-to-page {filename}"
                         system(command)
 
