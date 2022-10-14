@@ -21,7 +21,7 @@ class MyClient(discord.Client):
         if message.author == self.user:
             return
         
-        if message.content.startswith('!'):
+        if message.content.startswith('!') and message.author.guild_permissions.administrator:
             command = message.content[1:]
             if command == 'join':
                 if message.guild.id not in guilds:
@@ -94,5 +94,3 @@ intents.members = True
 client = MyClient(intents=intents)
 print(TOKEN)
 client.run(TOKEN)
-
-
