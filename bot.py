@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 import discord
 from os import system
+import requests
 
 
 load_dotenv()
@@ -75,7 +76,15 @@ class MyClient(discord.Client):
                     command = f"echo {(message.content)} | lp"
                     system(command)
                     if message.attachments:
-                        command = f"lp -o fit-to-page {(message.attachments[0].url)}"
+                        filename = "meme.png" if message.attachments[0].url.endswith(".png") else "meme.jpg"
+                        r = requests.get(message.attachments[0].url, stream=True)
+                        if r.status_code != 200:
+                            print("Error getting image")
+                            return
+                        with open(filename, "wb") as f:
+                            for chunk in r:
+                                f.write(chunk)
+                        command = f"lp -o fit-to-page {filename}"
                         system(command)
 
 intents = discord.Intents.default()
