@@ -76,7 +76,8 @@ class MyClient(discord.Client):
                     command = f"echo {(message.content)} | lp"
                     system(command)
                     if message.attachments:
-                        filename = "meme.png" if message.attachments[0].url.endswith(".png") else "meme.jpg"
+                        file_extention = message.attachments[0].url.split('.')[-1]
+                        filename = "meme" + "." + file_extention
                         r = requests.get(message.attachments[0].url, stream=True)
                         if r.status_code != 200:
                             print("Error getting image")
