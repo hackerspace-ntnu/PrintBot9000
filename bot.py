@@ -1,10 +1,12 @@
 import os
 from dotenv import load_dotenv
 import discord
+from os import system
 
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
+dry_run = True
 
 guilds = {}
 guld_channels = {}
@@ -61,7 +63,20 @@ class MyClient(discord.Client):
         
         if message.guild.id in guld_channels:
             if message.channel == guld_channels[message.guild.id]:
-                print(message.content)
+                if dry_run:
+                    print(message.author)
+                    print(message.content)
+                    if message.attachments:
+                        print(message.attachments[0].url)
+
+                else:
+                    command = f"echo {(message.author)} | lp"
+                    system(command)
+                    command = f"echo {(message.content)} | lp"
+                    system(command)
+                    if message.attachments:
+                        command = f"lp -o fit-to-page {(message.attachments[0].url)}"
+                        system(command)
 
 intents = discord.Intents.default()
 intents.message_content = True
